@@ -92,7 +92,8 @@ impl<T> GdCellBlocking<T> {
 
         if self.inner.as_ref().is_currently_bound()
             && tracker_guard.current_thread_shared_count() == 0
-            && !tracker_guard.current_thread_has_mut_ref()
+            && !(self.inner.as_ref().is_currently_mutably_bound()
+                && tracker_guard.current_thread_has_mut_ref())
         {
             // Block current thread until borrow becomes available.
             tracker_guard = self.block_mut(tracker_guard);
